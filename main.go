@@ -4,13 +4,18 @@ import "os"
 
 func main() {
 	app := App{}
+	os.Setenv("TEST_DB_USERNAME", "restapi2")
+	os.Setenv("TEST_DB_PASSWORD", "assword")
+	os.Setenv("TEST_DB_NAME", "restgovue")
+	os.Setenv("TEST_DB_HOST", "localhost")
+
 	app.Initialize(
-		os.Getenv("APP_DB_USERNAME"),
-		os.Getenv("APP_DB_PASSWORD"),
-		os.Getenv("APP_DB_NAME"),
-		os.Getenv("APP_DB_HOST"),
+		os.Getenv("TEST_DB_USERNAME"),
+		os.Getenv("TEST_DB_PASSWORD"),
+		os.Getenv("TEST_DB_NAME"),
+		os.Getenv("TEST_DB_HOST"),
 		"5432",
-		"require")
+		"disable")
 
 	port := os.Getenv("PORT")
 	if port == "" {

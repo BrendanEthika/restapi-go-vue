@@ -4,14 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/TylerBrock/colorjson"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"strconv"
 	"testing"
-	_ "github.com/TylerBrock/colorjson"
 )
 
 var app App
@@ -53,17 +51,16 @@ func addProducts(count int) {
 		count = 1
 	}
 
-	for ii := 0; ii < count; ii++ {
-		app.DB.Exec("INSERT INTO products(id, name, price) VALUES($1, $2)", ii, "Product "+strconv.Itoa(ii+1),
-			(ii+1.0)*10)
+	for i := 0; i < count; i++ {
+		app.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+strconv.Itoa(i), (i+1.0)*10)
 	}
 }
 
 func TestMain(m *testing.M) {
 	app = App{}
-	os.Setenv("TEST_DB_USERNAME", "restapi2")
-	os.Setenv("TEST_DB_PASSWORD", "assword")
-	os.Setenv("TEST_DB_NAME", "restgovue")
+	os.Setenv("TEST_DB_USERNAME", "testing")
+	os.Setenv("TEST_DB_PASSWORD", "testing")
+	os.Setenv("TEST_DB_NAME", "restapi-go-vue")
 	os.Setenv("TEST_DB_HOST", "localhost")
 
 	app.Initialize(
@@ -131,11 +128,8 @@ func TestCreateProduct(t *testing.T) {
 		t.Errorf("Expected product price to be %f, got %v", productPrice, product["price"])
 	}
 
-	s, _ := colorjson.Marshal(product)
-	fmt.Println(string(s))
-
-	if product["id"] == nil {
-		t.Errorf("Expected product ID to not be null, got %v", product["id"])
+	if product["id"] != 1.0 {
+		t.Errorf("Expected product ID to be '1', got %v", product["id"])
 	}
 }
 
@@ -145,9 +139,6 @@ func TestGetProduct(t *testing.T) {
 
 	req, _ := http.NewRequest("GET", "/api/products/1", nil)
 	response := executeRequest(req)
-
-	s, _ := colorjson.Marshal(response)
-	fmt.Println(string(s))
 
 	checkResponseCode(t, http.StatusOK, response.Code)
 }
